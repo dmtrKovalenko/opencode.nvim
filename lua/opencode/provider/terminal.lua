@@ -47,9 +47,11 @@ function Terminal:start()
     local previous_win = vim.api.nvim_get_current_win()
 
     self.bufnr = vim.api.nvim_create_buf(true, false)
-    self.winid = vim.api.nvim_open_win(self.bufnr, true, self.opts)
+    vim.api.nvim_set_option_value("filetype", "opencode_terminal", { buf = self.bufnr })
+    -- Neovim doesn't automatically trigger FileType autocommands for terminal buffers
+    vim.api.nvim_exec_autocmds("FileType", { pattern = "opencode_terminal" })
 
-    require("opencode.keymaps").apply(self.bufnr)
+    self.winid = vim.api.nvim_open_win(self.bufnr, true, self.opts)
 
     -- Redraw terminal buffer on initial render.
     -- Fixes empty columns on the right side.
